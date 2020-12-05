@@ -1,5 +1,3 @@
-var beautify = require("json-beautify");
-
 const DEFAULT_ERROR_HTTP_STATUS_CODE = 500;
 const DEFAULT_SUCCESS_HTTP_STATUS_CODE = 200;
 

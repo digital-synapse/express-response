@@ -18,6 +18,7 @@
   ],
   "author": "digital-synapse",
   "license": "ISC",
+  "homepage": "https://github.com/digital-synapse/express-response",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-string": "^1.5.0",

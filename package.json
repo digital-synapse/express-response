@@ -1,6 +1,6 @@
 {
   "name": "express-response",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "express middleware and fluent API to standardize REST API responses and error formatting",
   "main": "express-response.js",
   "scripts": {

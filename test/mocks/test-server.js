@@ -36,7 +36,7 @@ app.get('/handled-error', function (req, res, next) {
   }
 });
 
-app.post('/mixed-error', function (req, res) {
+app.post('/mixed-error-unhandled', function (req, res) {
   let response = res.response;
   response.results( req.body ); 
   response.errorBadRequest('request body missing foo');
@@ -44,6 +44,16 @@ app.post('/mixed-error', function (req, res) {
 
   // later when processing the request
   throw new Error('oops, i did not handle this error');
+});
+
+
+app.post('/mixed-error-response-unhandled', function (req, res) {
+  let response = res.response;
+  response.results( req.body ); 
+  response.errorBadRequest('request body missing foo');
+  response.errorBadRequest('request body missing bar');
+
+  next();
 });
 
 app.get('/unhandled-error', function (req, res) {
@@ -78,6 +88,29 @@ app.get('/success-unhandled', function (req, res, next) {
           // to prevent the request from hanging
 });
 
+const asyncRoute = fn =>
+  (req, res, next) => {
+    Promise.resolve(fn(req, res, next))
+      .catch(next);
+  };
+
+app.get('/success-unhandled-async', asyncRoute(async (req, res, next)=> {
+  let response = res.response;
+  response.results({ a:1, b:2, c:3});
+  let a= response.information("info A");
+  let b= response.information("info B");
+  a.information('info A: child info 1');
+  a.information('info A: child info 2');
+  a.information('info A: child info 3');
+  b.information('info B: child info 1');
+  // res.status(response.statusCode).json(response);
+  // oops we forgot to send a response
+  
+  await new Promise(resolve => setTimeout(resolve, 100)); // add a short delay to simulate DB access
+
+  next(); // express requires you have to at least call next
+          // to prevent the request from hanging
+}));
 
 var server = app.listen(1337, function () {
   var port = server.address().port;

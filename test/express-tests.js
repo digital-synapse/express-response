@@ -76,7 +76,7 @@ describe('Express Integration Tests', ()=>{
 
     it('failure response includes multiple validation errors', (done)=>{
       request(server)
-        .get('/mixed-error')
+        .get('/mixed-error-unhandled')
         .expect(500) // still 500 since server doesn't specify when error is thrown
         .then(res => {
           expect(res.body.errors).to.not.be.undefined;
@@ -85,6 +85,16 @@ describe('Express Integration Tests', ()=>{
         .finally(done);
     }); 
     
+    it('failure response is well formed when unhandled', (done)=>{
+      request(server)
+        .get('/mixed-error-response-unhandled')
+        .expect(400)
+        .then(res => {
+          expect(res.body.errors).to.not.be.undefined;
+          expect(res.body.errors).to.have.lengthOf(3);
+        })
+        .finally(done);
+    });     
     it('success response well formed when handled', (done)=>{
       request(server)
         .get('/success-handled')
@@ -108,6 +118,18 @@ describe('Express Integration Tests', ()=>{
         })
         .finally(done);
     }); 
+
+    it('success response well formed when unhandled (async)', (done)=>{
+      request(server)
+        .get('/success-unhandled-async')
+        .expect(200) 
+        .then(res => {
+          expect(res.body.errors).to.be.undefined;
+          expect(res.body.info).to.not.be.undefined;
+          expect(res.body.result).to.not.be.undefined;
+        })
+        .finally(done);
+    });     
 
   });
 

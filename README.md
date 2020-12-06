@@ -13,20 +13,20 @@ const express = require('express');
 const app = express();
 const { response } = require('express-stdresponse');
 
-app.get('/success',response((req,res,next)=>{
+app.get('/success',response(request =>{
   return 'ok!';
 }));
 
-app.get('/error', response((req,res,next)=>{
+app.get('/error', response(request =>{
   throw new Error('err!');
 }))
 
 // or add results, errors, and information to response as needed
-app.get('/', response((req, res, next) => {
-    var response = res.response; 
-    response.error('an error');
-    response.information('some info');
-    response.results({a:1,b:2,c:3});
+app.get('/', response((request, req, res, next) => {
+    var response = res.response;
+    if (req.query.throwError) response.error('an error');
+    if (req.query.returnInfo) response.information('some info');
+    response.results(req.query);
 }));
 
 const server = app.listen(3000, function () {

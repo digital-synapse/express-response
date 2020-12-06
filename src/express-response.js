@@ -27,6 +27,7 @@ class Response {
                 }
                 else if (!res.headersSent){
                     response.error(404, 'Not Found', `The requested route '${req.originalUrl}' could not be found`);
+                    res.status(res.statusCode).json(response);
                 }
             });
             next();
@@ -39,7 +40,7 @@ class Response {
     static errorHandlerMiddleware () { 
         return (err, req, res, next) => {
             let response = res.response || new Response();
-            response.addError(err.statusCode, err.statusMessage, err.message, err.stack);        
+            response.addError(err);        
             res.status(response.statusCode).json(response);
         }
     }
@@ -47,8 +48,8 @@ class Response {
     // shortcut method to register all express-response middleware in the correct order
     static registerExpressMiddleware (app){
         app.use(Response.requestMiddleware());
-        app.use(Response.errorHandlerMiddleware());
         app.use(Response.unhandledResponseMiddleware());
+        app.use(Response.errorHandlerMiddleware());
         return app;
     }
     
@@ -64,6 +65,10 @@ class Response {
             // 1 string argument - treat as error description
             if (typeof err === 'string' || err instanceof String){
                 return this.addError(undefined,undefined,err,undefined);
+            }
+            // 1 array argument error
+            else if (typeof err === 'object' && err instanceof Error){
+                return this.addError(err.statusCode, err.statusMessage, err.message, err.stack);   
             }
             // 1 object argument - treat as 'options' object
             else if (typeof err === 'object' && err instanceof Object){
@@ -339,34 +344,47 @@ class ResponseInfo extends Response {
     }
 }
 
-module.exports = {
-    Response: Response,
-    response: fn => (req, res, next) => {
-        try{
-            res.response = new Response();
+const response = fn => (req, res, next) => {
+    try{        
+        res.response = new Response();
 
-            const result = fn(req,res,next);
-            if (result !== undefined && typeof result.then === 'function'){
-                Promise.resolve(fn(req, res, next))
-                .then(response => res.status(response.statusCode).json(response || res.response))
-                .catch(next);
-            }
-            else{      
-                let response;          
-                if (result !== undefined){
-                    if (result instanceof Response){
-                        response = result;
-                    }
-                    else{
-                        res.response.results(result);
-                        result = res.response;
-                    }
-                }
-                res.status(response.statusCode).json(response);
-            }
+        const result = fn(res.response, req,res,next);
+        if (result !== undefined && typeof result.then === 'function'){
+            Promise.resolve(result)
+            .then(response => {
+                response = response || res.response;
+                res.status(response.statusCode).json(response || res.response);
+            })
+            .catch(e=>{
+                let response = res.response;
+                response.error(e);
+                res.status(response.statusCode).json(response || res.response);
+                //next(e);
+            });
         }
-        catch (e){
-            next();
+        else{      
+            let response;          
+            if (result !== undefined && result instanceof Response){
+                response = result;
+            }
+            else if (result !== undefined){
+                res.response.results(result);
+                response = res.response;
+            }
+            else{
+                response = res.response;
+            }
+            res.status(response.statusCode).json(response);
         }
     }
+    catch (e){
+        res.response.error(e);
+        res.status(res.response.statusCode).json(res.response);
+        next();
+    }
+}
+
+module.exports = {
+    Response,
+    response,
 };

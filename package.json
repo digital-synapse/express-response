@@ -20,6 +20,7 @@
   "license": "ISC",
   "homepage": "https://github.com/digital-synapse/express-response",
   "devDependencies": {
+    "body-parser": "^1.19.0",
     "chai": "^4.2.0",
     "chai-string": "^1.5.0",
     "express": "^4.17.1",

@@ -339,4 +339,34 @@ class ResponseInfo extends Response {
     }
 }
 
-module.exports = Response;
+module.exports = {
+    Response: Response,
+    response: fn => (req, res, next) => {
+        try{
+            res.response = new Response();
+
+            const result = fn(req,res,next);
+            if (result !== undefined && typeof result.then === 'function'){
+                Promise.resolve(fn(req, res, next))
+                .then(response => res.status(response.statusCode).json(response || res.response))
+                .catch(next);
+            }
+            else{      
+                let response;          
+                if (result !== undefined){
+                    if (result instanceof Response){
+                        response = result;
+                    }
+                    else{
+                        res.response.results(result);
+                        result = res.response;
+                    }
+                }
+                res.status(response.statusCode).json(response);
+            }
+        }
+        catch (e){
+            next();
+        }
+    }
+};

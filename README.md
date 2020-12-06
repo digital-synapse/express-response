@@ -11,14 +11,23 @@ npm install express-stdresponse
 ```
 const express = require('express');
 const app = express();
-const response = require('express-stdresponse');
+const { response } = require('express-stdresponse');
 
-response.registerExpressMiddleware(app);
+app.get('/success',response((req,res,next)=>{
+  return 'ok!';
+}));
 
-app.get('/', function (req, res, next) {
-  var response = res.response; // add results, errors, and information to this
-  next();
-});
+app.get('/error', response((req,res,next)=>{
+  throw new Error('err!');
+}))
+
+// or add results, errors, and information to response as needed
+app.get('/', response((req, res, next) => {
+    var response = res.response; 
+    response.error('an error');
+    response.information('some info');
+    response.results({a:1,b:2,c:3});
+}));
 
 const server = app.listen(3000, function () {
   var port = server.address().port;

@@ -6,7 +6,7 @@ const beautify = require('json-beautify');
 const json = (obj) => beautify(obj,null,2,100);
 
 describe('Response Model Tests', ()=>{
-  const Response = require('../src/express-response');
+  const Response = require('../src/express-response').Response;
 
   describe('success response', ()=>{
     it('returns status 200 by default',()=>{

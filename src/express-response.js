@@ -9,7 +9,7 @@ class Response {
     // app.use(Response.requestMiddleware);
     static requestMiddleware() {
         return (req, res, next) =>{
-            req.expressResponse = new Response();
+            res.response = new Response();
             next();
         };
     }
@@ -18,7 +18,7 @@ class Response {
     // does not explicitly do so
     static unhandledResponseMiddleware(){
         return (req, res, next) =>{            
-            const response = req.expressResponse;
+            const response = res.response
             res.on('finish', ()=>{
                 if (!response.hasError && (response.hasInfo || response.hasResult)){
                     if (!res.headersSent){
@@ -38,7 +38,7 @@ class Response {
     // app.use(Response.errorHandlerMiddleware)
     static errorHandlerMiddleware () { 
         return (err, req, res, next) => {
-            let response = req.expressResponse || new Response();
+            let response = res.response || new Response();
             response.addError(err.statusCode, err.statusMessage, err.message, err.stack);        
             res.status(response.statusCode).json(response);
         }
@@ -49,6 +49,7 @@ class Response {
         app.use(Response.requestMiddleware());
         app.use(Response.errorHandlerMiddleware());
         app.use(Response.unhandledResponseMiddleware());
+        return app;
     }
     
     constructor( optionalResult ){

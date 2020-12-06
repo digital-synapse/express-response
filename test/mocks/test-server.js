@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
 });
 
 app.post('/echo', function (req, res) {
-  let response = req.expressResponse;
+  let response = res.response;
   response.results( req.body ); 
   response.information('just echos back the request body as the result');
   res.status(response.statusCode).json(response);
@@ -37,7 +37,7 @@ app.get('/handled-error', function (req, res, next) {
 });
 
 app.post('/mixed-error', function (req, res) {
-  let response = req.expressResponse;
+  let response = res.response;
   response.results( req.body ); 
   response.errorBadRequest('request body missing foo');
   response.errorBadRequest('request body missing bar');
@@ -51,7 +51,7 @@ app.get('/unhandled-error', function (req, res) {
 });
 
 app.get('/success-handled', function (req, res) {
-  let response = req.expressResponse;
+  let response = res.response;
   response.results({ a:1, b:2, c:3});
   let a= response.information("info A");
   let b= response.information("info B");
@@ -63,7 +63,7 @@ app.get('/success-handled', function (req, res) {
 });
 
 app.get('/success-unhandled', function (req, res, next) {
-  let response = req.expressResponse;
+  let response = res.response;
   response.results({ a:1, b:2, c:3});
   let a= response.information("info A");
   let b= response.information("info B");

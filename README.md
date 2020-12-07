@@ -64,17 +64,16 @@ const express = require('express');
 const app = express();
 const resolve = require('express-stdresponse').response;
 
-app.get('/success', resolve(request => {
+app.get('/success', resolve(response => {
   return 'ok!';  // returns { "result": "ok!" }
 }));
 
-app.get('/error', resolve(request =>{
+app.get('/error', resolve(response =>{
   throw new Error('err!'); // returns {"errors":[{"status":500,"desc":"err!",data:"<stacktrace>"}]}
 }))
 
 // or add results, errors, and information to response as needed
-app.get('/', response((request, req, res, next) => {
-    var response = res.response;
+app.get('/', response((response, req, res, next) => {
     if (req.query.throwError) response.error('an error');
     if (req.query.returnInfo) response.information('some info');    
     response.results(req.query); 
@@ -89,3 +88,26 @@ const server = app.listen(3000, function () {
 ```
 
 For more detailed usage examples check out the unit tests in /tests
+
+### API Doc
+
+* response.error( (string) description ) 
+* response.error( (string) error_code, (string) description )
+* response.error( (int) status_code, (string) error_code, (string) description )
+* response.error( (int) status_code, (string) error_code, (string) description, (object) metadata )
+* response.error( (string) error_code, (string) description, (object) metadata )
+* response.error( (Error) error_object )
+* response.error( (object) options_object )
+* response.error( [ (object) options_object] )
+
+* response.info( (string) description ) 
+* response.info( (string) error_code, (string) description )
+* response.info( (int) status_code, (string) error_code, (string) description )
+* response.info( (int) status_code, (string) error_code, (string) description, (object) metadata )
+* response.info( (string) error_code, (string) description, (object) metadata )
+* response.info( (object) options_object )
+* response.info( [ (object) options_object] )
+
+* response.results( (any) your_response_body_payload )
+
+

@@ -91,6 +91,8 @@ For more detailed usage examples check out the unit tests in /tests
 
 ### API Doc
 
+#### response.error
+Used to attach errors to the response body. Returns reference of inserted error model. Supports chaining.
 * response.error( (string) description ) 
 * response.error( (string) error_code, (string) description )
 * response.error( (int) status_code, (string) error_code, (string) description )
@@ -100,14 +102,33 @@ For more detailed usage examples check out the unit tests in /tests
 * response.error( (object) options_object )
 * response.error( [ (object) options_object] )
 
-* response.info( (string) description ) 
-* response.info( (string) error_code, (string) description )
-* response.info( (int) status_code, (string) error_code, (string) description )
-* response.info( (int) status_code, (string) error_code, (string) description, (object) metadata )
-* response.info( (string) error_code, (string) description, (object) metadata )
-* response.info( (object) options_object )
-* response.info( [ (object) options_object] )
+#### response.information
+Used to attach info to the response body. Returns reference of inserted info model. Supports chaining.
+* response.information( (string) description ) 
+* response.information( (string) error_code, (string) description )
+* response.information( (int) status_code, (string) error_code, (string) description )
+* response.information( (int) status_code, (string) error_code, (string) description, (object) metadata )
+* response.information( (string) error_code, (string) description, (object) metadata )
+* response.information( (object) options_object )
+* response.information( [ (object) options_object] )
 
+#### response.results
+Used to attach your actual response body payload for successful requests
 * response.results( (any) your_response_body_payload )
+* response.setResult( (any) your_response_body_payload )
 
+#### error helpers
+Helper methods to create/attach common errors
+* response.errorGatewayTimeout(description, metadata)
+* response.errorInternalServerError(description, metadata)
+* response.errorBadRequest(description, metadata)
+* response.errorTooEarly(description, metadata)
+* response.errorMethodNotAllowed(description, metadata)
+* response.errorForbidden(description, metadata)
+
+#### config object options
+* config.REPORT_UNHANDLED_ERRORS: true
+* config.REPORT_UNHANDLED_ERRORS_INCLUDE_STACKTRACE: true
+* config.DEFAULT_ERROR_HTTP_STATUS_CODE: 500
+* config.DEFAULT_SUCCESS_HTTP_STATUS_CODE: 200
 

@@ -1,4 +1,3 @@
-const { assert } = require('chai');
 const chai = require('chai');
 const chaiString = require('chai-string');
 chai.use(chaiString);

@@ -17,7 +17,7 @@
     "node.js"
   ],
   "author": "digital-synapse",
-  "license": "ISC",
+  "license": "MIT",
   "homepage": "https://github.com/digital-synapse/express-response",
   "devDependencies": {
     "body-parser": "^1.19.0",

@@ -1,5 +1,13 @@
-const DEFAULT_ERROR_HTTP_STATUS_CODE = 500;
-const DEFAULT_SUCCESS_HTTP_STATUS_CODE = 200;
+let config = {
+    REPORT_UNHANDLED_ERRORS: true,
+    REPORT_UNHANDLED_ERRORS_INCLUDE_STACKTRACE: true,
+    DEFAULT_ERROR_HTTP_STATUS_CODE: 500,
+    DEFAULT_SUCCESS_HTTP_STATUS_CODE: 200,
+};
+
+const clean = require('clean-stacktrace');
+const path = require('path');
+const relativePaths = (line) => line.replace(process.cwd(),'.').replace(/\\/g,'/');
 
 class Response {
 
@@ -67,8 +75,9 @@ class Response {
                 return this.addError(undefined,undefined,err,undefined);
             }
             // 1 array argument error
-            else if (typeof err === 'object' && err instanceof Error){
-                return this.addError(err.statusCode, err.statusMessage, err.message, err.stack);   
+            else if (typeof err === 'object' && err instanceof Error && config.REPORT_UNHANDLED_ERRORS){
+                return this.addError(err.statusCode, err.statusMessage, err.message, 
+                    config.REPORT_UNHANDLED_ERRORS_INCLUDE_STACKTRACE ? clean(err.stack,relativePaths) : undefined);   
             }
             // 1 object argument - treat as 'options' object
             else if (typeof err === 'object' && err instanceof Object){
@@ -215,7 +224,7 @@ class Response {
             this.errors = [];
         }
         if (!status){
-            status = DEFAULT_ERROR_HTTP_STATUS_CODE;
+            status = config.DEFAULT_ERROR_HTTP_STATUS_CODE;
         }
         // do not permit duplicate error in response
         let duplicate = undefined;
@@ -288,7 +297,7 @@ class Response {
         if (this.errors){
             return Math.max.apply(null,this.errors.map(x => x.status));
         }
-        return DEFAULT_SUCCESS_HTTP_STATUS_CODE;
+        return config.DEFAULT_SUCCESS_HTTP_STATUS_CODE;
     }
 
     getStatusCode(){
@@ -375,6 +384,7 @@ const response = fn => (req, res, next) => {
                 response = res.response;
             }
             res.status(response.statusCode).json(response);
+            next();
         }
     }
     catch (e){
@@ -385,6 +395,7 @@ const response = fn => (req, res, next) => {
 }
 
 module.exports = {
+    config,
     Response,
     response,
 };

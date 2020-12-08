@@ -368,7 +368,7 @@ const response = fn => (req, res, next) => {
                 let response = res.response;
                 response.error(e);
                 res.status(response.statusCode).json(response || res.response);
-                //next(e);
+                next();
             });
         }
         else{      
@@ -384,7 +384,6 @@ const response = fn => (req, res, next) => {
                 response = res.response;
             }
             res.status(response.statusCode).json(response);
-            next();
         }
     }
     catch (e){

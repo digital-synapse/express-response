@@ -47,7 +47,7 @@ handles all promise resolution, errors, and response normalization.
 ```
 const app = require('express').express();
 const resolve = require('express-stdresponse').response;
-app.get('/', resolve( request => 'ok!' ));
+app.get('/', resolve( response => 'ok!' ));
 ```
 
 2. Use express middleware eg.
@@ -91,7 +91,13 @@ For more detailed usage examples check out the unit tests in /tests
 
 ### API Doc
 
-#### response.error
+#### response properties
+* response.hasError - returns true if any errors have been attached to the response model
+* response.statusCode - returns the highest value http status code in the response error collection or 200 if no errors have been attached to the response model
+* response.hasInfo 
+* response.hasResult
+
+#### response.error()
 Used to attach errors to the response body. Returns reference of inserted error model. Supports chaining.
 * response.error( (string) description ) 
 * response.error( (string) error_code, (string) description )
@@ -102,7 +108,7 @@ Used to attach errors to the response body. Returns reference of inserted error 
 * response.error( (object) options_object )
 * response.error( [ (object) options_object] )
 
-#### response.information
+#### response.information()
 Used to attach info to the response body. Returns reference of inserted info model. Supports chaining.
 * response.information( (string) description ) 
 * response.information( (string) error_code, (string) description )
@@ -112,7 +118,7 @@ Used to attach info to the response body. Returns reference of inserted info mod
 * response.information( (object) options_object )
 * response.information( [ (object) options_object] )
 
-#### response.results
+#### response.results()
 Used to attach your actual response body payload for successful requests
 * response.results( (any) your_response_body_payload )
 * response.setResult( (any) your_response_body_payload )
